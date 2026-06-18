@@ -1,0 +1,28 @@
+{
+  "version": "1",
+  "entries": [
+    {
+      "name": "dcc-asset-ambientcg",
+      "description": "Search and download free ambientCG materials, HDRIs, and models",
+      "dcc": [
+        "maya",
+        "blender",
+        "houdini",
+        "3dsmax"
+      ],
+      "tags": [
+        "asset",
+        "ambientcg",
+        "download",
+        "pbr"
+      ],
+      "version": "0.1.0",
+      "install": {
+        "type": "git",
+        "url": "https://github.com/dcc-mcp/dcc-asset-ambientcg",
+        "ref": "main"
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,2 @@
+"""ambientCG skill scripts."""
+
