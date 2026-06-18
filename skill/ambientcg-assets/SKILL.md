@@ -1,30 +1,23 @@
 ---
 name: ambientcg-assets
 description: Search, inspect, and download free ambientCG materials, HDRIs, and models.
+license: MIT
+compatibility: "dcc-mcp-core 0.18+"
 metadata:
   dcc-mcp:
     version: v0.1.0
     dcc: python
-    display_name: ambientCG Assets
-    group: asset.download.free
-    default_icon: package
-    affinity: any
-    marketplace: dcc-asset-ambientcg
+    layer: domain
+    tags:
+      - asset
+      - ambientcg
+      - pbr
+      - materials
+      - hdris
+      - models
+      - download
+    search-hint: "ambientcg, free pbr materials, texture archive, material download, hdri download, 3d model download"
     tools: tools.yaml
-    execution: sync
-    permissions:
-      - network
-      - filesystem
-    examples:
-      - "Search ambientCG for rock models"
-      - "List download archives for an ambientCG asset"
-      - "Download a 2K JPG archive"
-    contact:
-      name: dcc-mcp team
-      url: https://github.com/dcc-mcp/dcc-asset-ambientcg
-    install:
-      add_source: "dcc-mcp-cli marketplace add dcc-mcp/dcc-asset-ambientcg"
-      then_install: "dcc-mcp-cli marketplace install dcc-asset-ambientcg"
 ---
 
 # ambientCG Assets
