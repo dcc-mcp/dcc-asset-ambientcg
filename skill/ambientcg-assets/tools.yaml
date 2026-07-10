@@ -54,7 +54,7 @@ tools:
       type: object
 
   - name: download_ambientcg_asset
-    description: Download one ambientCG archive by asset ID and download attribute.
+    description: Download one ambientCG archive and return a validated CC0 AssetDescriptor.
     source_file: scripts/download_ambientcg_asset.py
     execution: sync
     affinity: any
@@ -82,3 +82,20 @@ tools:
           default: false
     output_schema:
       type: object
+      required: [asset_descriptor]
+      properties:
+        asset_descriptor:
+          type: object
+          required: [asset_id, variants, attribution]
+          properties:
+            asset_id:
+              type: string
+            variants:
+              type: array
+              minItems: 1
+              items:
+                type: object
+                required: [local_path, format]
+            attribution:
+              type: object
+              required: [source_url, license_spdx]
