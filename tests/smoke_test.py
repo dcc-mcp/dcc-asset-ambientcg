@@ -27,6 +27,16 @@ def validate_skill() -> None:
     assert not report.has_errors, report
 
 
+def descriptor_smoke() -> None:
+    downloader = load("download_ambientcg_asset")
+    descriptor = downloader.asset_descriptor(
+        "Wood095", "/tmp/Wood095.zip", {"downloadAttribute": "2K-JPG", "downloadLink": "https://example.com/Wood095.zip"}
+    )
+    assert descriptor["variants"][0]["local_path"] == "/tmp/Wood095.zip"
+    assert descriptor["attribution"]["license_spdx"] == "CC0-1.0"
+    assert descriptor["extra"]["download_attribute"] == "2K-JPG"
+
+
 def live_ambientcg_smoke() -> None:
     if os.environ.get("RUN_LIVE_API_SMOKE") != "true":
         print("skip live ambientCG API smoke")
@@ -41,9 +51,9 @@ def live_ambientcg_smoke() -> None:
 
 def main() -> None:
     validate_skill()
+    descriptor_smoke()
     live_ambientcg_smoke()
 
 
 if __name__ == "__main__":
     main()
-
