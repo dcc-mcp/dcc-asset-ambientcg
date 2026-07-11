@@ -1,6 +1,6 @@
 # DCC-MCP ambientCG Assets
 
-![Workflow showcase](docs/workflow-showcase.png)
+![Workflow showcase](docs/images/dcc-asset-ambientcg-showcase.webp)
 
 Search and download ambientCG assets.
 
