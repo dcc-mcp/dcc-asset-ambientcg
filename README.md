@@ -1,5 +1,7 @@
 # DCC-MCP ambientCG Assets
 
+![Workflow showcase](docs/workflow-showcase.png)
+
 Search and download ambientCG assets.
 
 This skill uses the public ambientCG API and stores downloaded archives on disk.
