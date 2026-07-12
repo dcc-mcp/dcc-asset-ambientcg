@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -37,6 +39,37 @@ def descriptor_smoke() -> None:
     assert descriptor["extra"]["download_attribute"] == "2K-JPG"
 
 
+def download_headers_smoke() -> None:
+    helper = load("_ambientcg")
+    observed = {}
+
+    class Response(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            self.close()
+
+    def fake_urlopen(request, timeout):
+        observed["headers"] = dict(request.header_items())
+        observed["timeout"] = timeout
+        return Response(b"zip-data")
+
+    original = helper.urllib.request.urlopen
+    helper.urllib.request.urlopen = fake_urlopen
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(helper.fetch("https://ambientCG.com/get?file=Metal063_1K-JPG.zip", tmp))
+            assert path.read_bytes() == b"zip-data"
+            assert not path.with_suffix(".zip.part").exists()
+    finally:
+        helper.urllib.request.urlopen = original
+
+    assert observed["headers"]["User-agent"].startswith("dcc-mcp/")
+    assert observed["headers"]["Referer"] == "https://ambientcg.com/"
+    assert observed["timeout"] == 180
+
+
 def live_ambientcg_smoke() -> None:
     if os.environ.get("RUN_LIVE_API_SMOKE") != "true":
         print("skip live ambientCG API smoke")
@@ -52,6 +85,7 @@ def live_ambientcg_smoke() -> None:
 def main() -> None:
     validate_skill()
     descriptor_smoke()
+    download_headers_smoke()
     live_ambientcg_smoke()
 
 
