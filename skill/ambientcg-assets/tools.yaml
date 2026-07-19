@@ -1,6 +1,6 @@
 tools:
   - name: search_ambientcg_assets
-    description: Search ambientCG assets.
+    description: Search ambientCG CC0 PBR materials, HDRIs, atlases, terrains, and 3D models without login.
     source_file: scripts/search_ambientcg_assets.py
     execution: sync
     affinity: any
@@ -18,12 +18,12 @@ tools:
           type: string
         asset_type:
           type: string
-          enum: ["all", "3DModel", "Material", "HDRI", "Atlas", "Decal", "Terrain", "PlainTexture", "Substance", "Brush"]
+          enum: ["all", "3d-model", "material", "hdri", "atlas", "decal", "terrain", "plain-image", "substance", "brush", "3DModel", "Material", "HDRI", "Atlas", "Decal", "Terrain", "PlainTexture", "Substance", "Brush"]
           default: "all"
         sort:
           type: string
-          enum: ["Latest", "Popular", "Alphabet", "Downloads"]
-          default: "Popular"
+          enum: ["latest", "popular", "alphabet", "downloads", "oldest", "random", "Latest", "Popular", "Alphabet", "Downloads"]
+          default: "popular"
         limit:
           type: integer
           minimum: 1

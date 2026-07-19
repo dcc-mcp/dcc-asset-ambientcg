@@ -20,7 +20,7 @@ def asset_descriptor(asset_id: str, local_path: str, download: dict[str, str]) -
             )
         ],
         attribution=AssetAttribution(
-            source_url=f"https://ambientcg.com/view?id={asset_id}",
+            source_url=f"https://ambientcg.com/a/{asset_id}",
             license_spdx="CC0-1.0",
             attribution_text="ambientCG asset — CC0 1.0 Universal.",
         ),
@@ -40,7 +40,7 @@ def main(
 ) -> dict[str, Any]:
     try:
         rows = download_rows(asset_id)
-        row = next((r for r in rows if r.get("downloadAttribute") == download_attribute), None)
+        row = next((r for r in rows if r.get("downloadAttribute", "").lower() == download_attribute.lower()), None)
         if row is None:
             return skill_error("ambientCG download not found", download_attribute, downloads=rows)
         url = row.get("rawLink" if use_raw_link else "downloadLink")

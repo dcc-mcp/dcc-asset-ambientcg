@@ -32,11 +32,70 @@ def validate_skill() -> None:
 def descriptor_smoke() -> None:
     downloader = load("download_ambientcg_asset")
     descriptor = downloader.asset_descriptor(
-        "Wood095", "/tmp/Wood095.zip", {"downloadAttribute": "2K-JPG", "downloadLink": "https://example.com/Wood095.zip"}
+        "Wood095",
+        "/tmp/Wood095.zip",
+        {
+            "downloadAttribute": "2K-JPG",
+            "downloadLink": "https://example.com/Wood095.zip",
+        },
     )
     assert descriptor["variants"][0]["local_path"] == "/tmp/Wood095.zip"
     assert descriptor["attribution"]["license_spdx"] == "CC0-1.0"
     assert descriptor["extra"]["download_attribute"] == "2K-JPG"
+
+
+def v3_contract_smoke() -> None:
+    helper = load("_ambientcg")
+    search = load("search_ambientcg_assets")
+    observed = {}
+
+    def fake_json_api(params):
+        observed.update(params)
+        return {
+            "totalResults": 1,
+            "assets": [
+                {
+                    "id": "3DApple002",
+                    "type": "3d-model",
+                    "title": "Apple 002",
+                    "url": "https://ambientcg.com/a/3DApple002",
+                    "thumbnails": {"256-PNG": "https://example.com/apple.png"},
+                }
+            ],
+        }
+
+    search.json_api = fake_json_api
+    result = search.main(asset_type="3DModel", sort="Popular", limit=1)
+    assert result["success"], result
+    assert observed["type"] == "3d-model"
+    assert observed["sort"] == "popular"
+    assert result["context"]["total_results"] == 1
+    assert result["context"]["assets"][0]["id"] == "3DApple002"
+
+    helper.json_api = lambda _params: {
+        "assets": [
+            {
+                "downloads": [
+                    {
+                        "attributes": "1K-JPG",
+                        "extension": "zip",
+                        "url": "https://example.com/a.zip",
+                        "size": 12,
+                    }
+                ]
+            }
+        ]
+    }
+    rows = helper.download_rows("3DApple002")
+    assert rows == [
+        {
+            "downloadAttribute": "1K-JPG",
+            "filetype": "zip",
+            "size": "12",
+            "downloadLink": "https://example.com/a.zip",
+            "rawLink": "https://example.com/a.zip",
+        }
+    ]
 
 
 def download_headers_smoke() -> None:
@@ -59,7 +118,11 @@ def download_headers_smoke() -> None:
     helper.urllib.request.urlopen = fake_urlopen
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(helper.fetch("https://ambientCG.com/get?file=Metal063_1K-JPG.zip", tmp))
+            path = Path(
+                helper.fetch(
+                    "https://ambientCG.com/get?file=Metal063_1K-JPG.zip&source=api", tmp
+                )
+            )
             assert path.read_bytes() == b"zip-data"
             assert not path.with_suffix(".zip.part").exists()
     finally:
@@ -74,7 +137,7 @@ def live_ambientcg_smoke() -> None:
     if os.environ.get("RUN_LIVE_API_SMOKE") != "true":
         print("skip live ambientCG API smoke")
         return
-    search = load("search_ambientcg_assets").main(query="3D", asset_type="3DModel", limit=1)
+    search = load("search_ambientcg_assets").main(asset_type="3d-model", limit=1)
     assert search["success"], search
     assert search["context"]["assets"], search
     downloads = load("list_ambientcg_downloads").main(asset_id="Wood095")
@@ -85,6 +148,7 @@ def live_ambientcg_smoke() -> None:
 def main() -> None:
     validate_skill()
     descriptor_smoke()
+    v3_contract_smoke()
     download_headers_smoke()
     live_ambientcg_smoke()
 
