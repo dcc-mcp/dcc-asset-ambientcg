@@ -8,7 +8,8 @@
         "maya",
         "blender",
         "houdini",
-        "3dsmax"
+        "3dsmax",
+        "unreal"
       ],
       "tags": [
         "asset",
@@ -16,7 +17,7 @@
         "download",
         "pbr"
       ],
-      "version": "0.1.0",
+      "version": "0.2.0",
       "install": {
         "type": "git",
         "url": "https://github.com/dcc-mcp/dcc-asset-ambientcg",

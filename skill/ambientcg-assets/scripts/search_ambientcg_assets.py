@@ -4,37 +4,44 @@ from typing import Any
 
 from dcc_mcp_core.skill import skill_entry, skill_exception, skill_success
 
-from _ambientcg import json_api
+from _ambientcg import json_api, normalize_asset_type
 
 
 @skill_entry
 def main(
     query: str | None = None,
     asset_type: str = "all",
-    sort: str = "Popular",
+    sort: str = "popular",
     limit: int = 10,
     **_: Any,
 ) -> dict[str, Any]:
     try:
         data = json_api(
-            "/full_json",
-            {"q": query, "sort": sort, "limit": 250 if asset_type != "all" else limit},
+            {
+                "q": query,
+                "type": normalize_asset_type(asset_type),
+                "sort": sort.lower(),
+                "limit": limit,
+            }
         )
-        found = data.get("foundAssets", [])
-        if asset_type != "all":
-            found = [a for a in found if a.get("dataType") == asset_type]
+        found = data.get("assets", [])
         assets = [
             {
-                "id": a.get("assetId"),
-                "display_name": a.get("displayName"),
-                "type": a.get("dataType"),
-                "category": a.get("category"),
-                "preview_image": (a.get("previewImage") or {}).get("256-PNG"),
-                "short_link": a.get("shortLink"),
+                "id": a.get("id"),
+                "display_name": a.get("title"),
+                "type": a.get("type"),
+                "category": None,
+                "preview_image": (a.get("thumbnails") or {}).get("256-PNG"),
+                "short_link": a.get("url"),
             }
-            for a in found[:limit]
+            for a in found
         ]
-        return skill_success("ambientCG assets found", assets=assets, count=len(assets))
+        return skill_success(
+            "ambientCG assets found",
+            assets=assets,
+            count=len(assets),
+            total_results=data.get("totalResults", len(assets)),
+        )
     except Exception as exc:
         return skill_exception(exc, message="Failed to search ambientCG")
 
